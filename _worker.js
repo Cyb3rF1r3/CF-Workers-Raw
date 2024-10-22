@@ -5,12 +5,12 @@ export default {
 		const url = new URL(request.url);
 		if (url.pathname !== '/') {
 			const name = url.pathname.split('/').pop();
-			if (name.endsWith('.js')) {
+			if (name.match(/\.js$/i)) {
 				if (!/(quantumult%20|surge|loon|stash)/i.test(ua)) {
 					return Response.redirect('https://t.me/yqc_123', 302);
 				}
 			}
-			if (!name.endsWith('.')) return new Response(`别乱访问了`, { status: 404 });
+			if (!name.match(/\./i)) return new Response(`别乱访问了`, { status: 404 });
 			let githubRawUrl = 'https://raw.githubusercontent.com';
 			if (new RegExp(githubRawUrl, 'i').test(url.pathname)) {
 				githubRawUrl += url.pathname.split(githubRawUrl)[1];
