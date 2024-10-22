@@ -1,10 +1,17 @@
-let token = "";
+let token = '';
 export default {
-	async fetch(request ,env) {
+	async fetch(request, env) {
+		const ua = request.headers.get('user-agent');
 		const url = new URL(request.url);
-		if(url.pathname !== '/'){
+		if (url.pathname !== '/') {
+			const name = url.pathname.split('/').pop();
+			if (name.endsWith('.js')) {
+				if (!/(quantumult%20|surge\/\d+|loon\/\d+)/i.test(ua)) {
+					return Response.redirect('https://t.me/yqc_123', 302);
+				}
+			}
 			let githubRawUrl = 'https://raw.githubusercontent.com';
-			if (new RegExp(githubRawUrl, 'i').test(url.pathname)){
+			if (new RegExp(githubRawUrl, 'i').test(url.pathname)) {
 				githubRawUrl += url.pathname.split(githubRawUrl)[1];
 			} else {
 				if (env.GH_NAME) {
@@ -17,15 +24,15 @@ export default {
 				githubRawUrl += url.pathname;
 			}
 			//console.log(githubRawUrl);
-			if (env.GH_TOKEN && env.TOKEN){
+			if (env.GH_TOKEN && env.TOKEN) {
 				if (env.TOKEN == url.searchParams.get('token')) token = env.GH_TOKEN || token;
 				else token = url.searchParams.get('token') || token;
 			} else token = url.searchParams.get('token') || env.GH_TOKEN || env.TOKEN || token;
-			
+
 			const githubToken = token;
 			//console.log(githubToken);
 			if (!githubToken || githubToken == '') return new Response('TOKEN不能为空', { status: 400 });
-			
+
 			// 构建请求头
 			const headers = new Headers();
 			headers.append('Authorization', `token ${githubToken}`);
@@ -37,16 +44,15 @@ export default {
 			if (response.ok) {
 				return new Response(response.body, {
 					status: response.status,
-					headers: response.headers
+					headers: response.headers,
 				});
 			} else {
 				const errorText = env.ERROR || '无法获取文件，检查路径或TOKEN是否正确。';
 				// 如果请求不成功，返回适当的错误响应
 				return new Response(errorText, { status: response.status });
 			}
-
 		} else {
-			const envKey = env.URL302 ? 'URL302' : (env.URL ? 'URL' : null);
+			const envKey = env.URL302 ? 'URL302' : env.URL ? 'URL' : null;
 			if (envKey) {
 				const URLs = await ADD(env[envKey]);
 				const URL = URLs[Math.floor(Math.random() * URLs.length)];
@@ -59,7 +65,7 @@ export default {
 				},
 			});
 		}
-	}
+	},
 };
 
 async function nginx() {
@@ -89,16 +95,16 @@ async function nginx() {
 	<p><em>Thank you for using nginx.</em></p>
 	</body>
 	</html>
-	`
-	return text ;
+	`;
+	return text;
 }
 
 async function ADD(envadd) {
-	var addtext = envadd.replace(/[	|"'\r\n]+/g, ',').replace(/,+/g, ',');	// 将空格、双引号、单引号和换行符替换为逗号
+	var addtext = envadd.replace(/[	|"'\r\n]+/g, ',').replace(/,+/g, ','); // 将空格、双引号、单引号和换行符替换为逗号
 	//console.log(addtext);
 	if (addtext.charAt(0) == ',') addtext = addtext.slice(1);
-	if (addtext.charAt(addtext.length -1) == ',') addtext = addtext.slice(0, addtext.length - 1);
+	if (addtext.charAt(addtext.length - 1) == ',') addtext = addtext.slice(0, addtext.length - 1);
 	const add = addtext.split(',');
 	//console.log(add);
-	return add ;
+	return add;
 }
