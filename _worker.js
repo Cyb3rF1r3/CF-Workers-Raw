@@ -6,7 +6,7 @@ export default {
 		if (url.pathname !== '/') {
 			const name = url.pathname.split('/').pop();
 			if (name.endsWith('.js')) {
-				if (!/(quantumult%20|surge\/\d+|loon\/\d+)/i.test(ua)) {
+				if (!/(quantumult%20|surge|loon|stash)/i.test(ua)) {
 					return Response.redirect('https://t.me/yqc_123', 302);
 				}
 			}
