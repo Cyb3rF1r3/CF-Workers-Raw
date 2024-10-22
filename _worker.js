@@ -10,7 +10,7 @@ export default {
 					return Response.redirect('https://t.me/yqc_123', 302);
 				}
 			}
-			if (!name.endsWith('.')) return Response(`别乱访问了`, { status: 404 });
+			if (!name.endsWith('.')) return new Response(`别乱访问了`, { status: 404 });
 			let githubRawUrl = 'https://raw.githubusercontent.com';
 			if (new RegExp(githubRawUrl, 'i').test(url.pathname)) {
 				githubRawUrl += url.pathname.split(githubRawUrl)[1];
